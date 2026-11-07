@@ -41,4 +41,3 @@ dependencies {
                                     implementation("androidx.media3:media3-transformer:1.5.1")
                                         debugImplementation("androidx.compose.ui:ui-tooling")
 }
-                }
