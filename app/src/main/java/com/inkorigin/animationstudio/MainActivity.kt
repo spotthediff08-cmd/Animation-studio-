@@ -102,3 +102,8 @@ class MainActivity : ComponentActivity() {
                                                                                                                                                                                                                                                                                                                                                                                             )
                                                                                                                                                                                                                                                                                                                                                                                                                     Text("Video export settings will appear here.")
                                                                                                                 }
+                                                                                        }
+                                                                    }
+                            }
+        }
+}
