@@ -14,6 +14,10 @@ android {
         versionName = "0.1.0"
     }
     buildFeatures { compose = true }
+}tasks.withType<JavaCompile>().configureEach {
+        sourceCompatibility = "17"
+            targetCompatibility = "17"
+}
 }
 dependencies {
     implementation(platform("androidx.compose:compose-bom:2024.12.01"))
