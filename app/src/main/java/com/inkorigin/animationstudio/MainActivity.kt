@@ -1,6 +1,7 @@
 
 package com.inkorigin.animationstudio
-
+import coil.compose.AsyncImage
+import androidx.documentfile.provider.DocumentFile
 import android.content.Intent
 import android.net.Uri
 import android.os.Bundle
@@ -25,6 +26,14 @@ class MainActivity : ComponentActivity() {
                                                                 mutableStateOf<Uri?>(null)
                                             }
 
+                                          var imageNames by remember {
+                                               mutableStateOf<List<String>>(emptyList())
+}
+
+var imageUris by remember {
+        mutableStateOf<List<Uri>>(emptyList())
+}
+}
                                                         val folderPicker = rememberLauncherForActivityResult(
                                                                             contract = ActivityResultContracts.OpenDocumentTree()
                                                         ) { uri ->
@@ -35,6 +44,34 @@ class MainActivity : ComponentActivity() {
                                                                                                                                                                                         Intent.FLAG_GRANT_READ_URI_PERMISSION
                                                                                                                             )
                                                                                                                                                     folderUri = uri
+
+val files = DocumentFile.fromTreeUri(this@MainActivity, uri)
+    ?.listFiles()
+        ?.filter {
+                    it.isFile && it.name?.substringAfterLast(".")?.lowercase()
+                                in listOf("png", "jpg", "jpeg", "webp")
+        }
+            ?: emptyList()
+
+            imageUris = files.map { it.uri }
+                                                                                                                                                    imageNames = DocumentFile.fromTreeUri(this@MainActivity, uri)
+                                                                                                                                                        ?.listFiles()
+                                                                                                                                                            ?.filter {
+                                                                                                                                                                        it.isFile && it.name?.substringAfterLast(".")?.lowercase()
+                                                                                                                                                                                    in listOf("png", "jpg", "jpeg", "webp")
+                                                                                                                                                            }
+                                                                                                                                                                ?.mapNotNull { it.name }
+
+                                                                                                                                                                ?.sortedBy { name ->
+                                                                                                                                                                    val base = name.substringBeforeLast(".")
+                                                                                                                                                                        if (base.all { it.isDigit() }) {
+                                                                                                                                                                                        "0${base.padStart(10, '0')}"
+                                                                                                                                                                        } else {
+                                                                                                                                                                                        "1${base.uppercase()}"
+                                                                                                                                                                        }
+                                                                                                                                                                }
+                                                                                                                                                                        }
+                                                                                                                                                                    ?: emptyList()
                                                                                                 } catch (e: Exception) {
                                                                                                                             folderUri = uri
                                                                                                 }
@@ -86,6 +123,21 @@ class MainActivity : ComponentActivity() {
                                                                                                                                                                                                                                                                                                     Text("No folder selected yet.")
                                                                                                                                                                                                                                                                     }
 
+if (imageNames.isNotEmpty()) {
+            Text(
+                        "Imported Images: ${imageNames.size}",
+                                style = MaterialTheme.typography.titleMedium
+            )
+
+                imageUris.forEach { imageUri ->
+                        AsyncImage(
+                                model = imageUri,
+                                    contentDescription = "Scene image",
+                                        modifier = Modifier.size(120.dp)
+                        )
+                            }
+}
+            )
                                                                                                                                                                                                                                                                                             HorizontalDivider()
 
                                                                                                                                                                                                                                                                                                                     Text(
